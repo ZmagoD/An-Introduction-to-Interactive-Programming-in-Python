@@ -1,0 +1,105 @@
+# template for "Stopwatch: The Game"
+
+# define global variables
+import simplegui
+import math
+
+t=0
+num1=0
+num2=0
+con1=0
+con2=0
+con3=0
+con4=0
+def procent(x,y):
+    #return a % of successful hits
+    return str(math.ceil((100*y)/x))+"%"
+    
+
+# define helper function format that converts time
+# in tenths of seconds into formatted string A:BC.D
+def format(t):
+    a=(t//10)//60
+    b=((t//10)%60)/10
+    c=((t//10)%60)%10
+    d=(t//1)%10
+    global con1,con2,con3,con4,label2,num2
+    con1=c
+    con2=d
+    con3=b
+    con4=a
+    if b==2 and num2<2:
+        label2.set_text("Try harder!")
+    if b==3 and num2<2:
+        label2.set_text("Oh MAN what IS that!")
+    if b==2 and num2==4:
+        label2.set_text("You have a superhuman reflexes!")
+    if b==3 and num2==6:
+        label2.set_text("Are you a cyborg from the future?")
+    
+    if a==10:
+        timer.stop()
+        t=0
+    return str(a)+":"+str(b)+str(c)+"."+str(d)
+    
+    
+# define event handlers for buttons; "Start", "Stop", "Reset"
+def start():
+   timer.start()
+   global fr,label2
+   label2.set_text("")
+   fr.set_canvas_background("Green")
+def stop():
+   while timer.is_running():
+        global num1,num2,con1,con2,con3,con4,fr,label2, label3
+        num1+=1
+        if (con1==0 and con2==0 and (con3>=1 or con4>=1)) or (con1==5 and con2==0):
+            num2+=1
+            label2.set_text("Got it!")
+        label3.set_text("Your score "+procent(num1,num2))
+        fr.set_canvas_background("Red")
+        timer.stop()
+        
+def reset():
+    global num1,num2,t,timer, fr,label2
+    t=0
+    timer.stop()
+    num1=0
+    num2=0
+    fr.set_canvas_background("Black")
+    label2.set_text("")
+    
+
+# define event handler for timer with 0.1 sec interval
+def timer_handler():
+    global t
+    t+=1
+    
+    
+
+# define draw handler
+def draw(canvas):
+    canvas.draw_text(str(format(t)),[100,150],48,"White")
+    canvas.draw_text(str(num2)+"/"+str(num1),[210,50],48,"White")
+                     
+    
+# create frame
+fr=simplegui.create_frame("Stopwatch",300,300)
+fr.set_canvas_background("Black")
+btn1=fr.add_button("Start",start)
+btn2=fr.add_button("Stop",stop)
+btn3=fr.add_button("Reset",reset)
+timer=simplegui.create_timer(100,timer_handler)
+label=fr.add_label("Instructions")
+label2=fr.add_label("")
+label3=fr.add_label("")
+label.set_text("Get point if stop the stopwatch on  5.0, 10.0, 15.0, 20.0,...") 
+
+# register event handlers
+fr.set_draw_handler(draw)
+
+# start frame
+fr.start()
+
+# Please remember to review the grading rubric
+
